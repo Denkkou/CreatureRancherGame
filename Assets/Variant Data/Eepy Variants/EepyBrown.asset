@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42763c26848a8ca4e928d5b8f6c9414c, type: 3}
+  m_Name: EepyBrown
+  m_EditorClassIdentifier: 
+  variantName: Brown Eepy
+  variantDescription: 
+  variantIcon: {fileID: 2800000, guid: 49e387005df00234d901dea6e5f6d7da, type: 3}
