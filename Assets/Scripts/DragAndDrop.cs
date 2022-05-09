@@ -8,44 +8,29 @@ using UnityEngine.EventSystems;
 
 /* This drag and drop script was adapted from https://stackoverflow.com/questions/44515498/drag-and-drop-in-scrollrect-scrollview-in-unity3d
  * 
- * It's currently cosmetic; the object we are dragging around is the icon from each slot. When it comes to calling the swap function,
- * I might have to refer to the icon's _ogParent reference to get the slot it came from (important to note that it's parented to something else
- * until released. I don't know what order the draggedIn code and the reparent code will execute, so lets just assume the wrong order. To fix this
- * I've added a script to the temporary sibling/parent to store a reference to the previous parent, aka, this slot.
- * 
- * The way this class works, I think, is to restrict the scrollRect's functionality to whenever we aren't dragging. 
- * 
- * Cosmetically, both the origin slot and the icon go semi-transparent when dragging. Additionally, both the original slot
- * and the currently hovered over slot (while still dragging) both wobble. This should give some visual feedback for
- * what slots are potentially being swapped.
- * 
  * There is currently a coupled hack fix for the lingering wobble when you release at line 117 so try and find a way around this
  * (might be an issue with MouseHover.cs?)
  */
 
 public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
 {
-    private bool draggingSlot;
-    private ScrollRect scrollRect;
-
-    //object references
     private Canvas _canvas;
     private CanvasGroup _canvasGroup;
+    private EventManager _eventManager;
 
+    private GameObject _slotHelper;
+    public GameObject _ogParent;
+
+    private bool draggingSlot;
+    private ScrollRect scrollRect;
     private Vector2 _transformBeforeDrag;
     private RawImage _image;
 
-    //sibling and parent info
     private int _siblingIndex;
-    private GameObject _slotHelper;
-
-    private EventManager _eventManager;
-
-    public GameObject _ogParent;
-
-    //this flag is specifically for determining when something has been
-    //clicked and dragged the intended way, as to avoid bypassing it
     private bool _isPickedUp;
+
+    //this can be derived from settings in future
+    private float _holdDelay = 0.2f;
 
     private void Start()
     {
@@ -62,8 +47,8 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         //store index of this object, as to be able to return to it
         _siblingIndex = transform.GetSiblingIndex();
 
-        //get the last sibling (the helper object that will store the icon to render on top)
-        _slotHelper = transform.parent.gameObject.transform.GetChild(transform.parent.gameObject.transform.childCount - 1).gameObject;
+        //at the bottom of the canvas heirarchy, there's a helper to render an icon on top of everything
+        _slotHelper = GameObject.Find("CurrentlyDraggedIconHolder");
 
         //store reference to the original parent (this) for both referencing later & reparenting
         _ogParent = transform.gameObject;
@@ -98,7 +83,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     private IEnumerator StartTimer()
     {
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(_holdDelay);
         draggingSlot = true;
     }
 
@@ -159,9 +144,6 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         //parent to the helper temporarily
         _image.transform.SetParent(_slotHelper.transform, true);
-
-        //tell the helper the original parent
-        _slotHelper.GetComponent<SlotHelper>().originalParent = _ogParent;
     }
 
     private void RevertDragEffects()
@@ -188,12 +170,9 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         //reparent and revert organisation to normal
         _image.transform.SetParent(_ogParent.transform, false);
         _image.transform.SetSiblingIndex(_siblingIndex);
-
-        //finally clear the helper's parent ref for hygiene
-        _slotHelper.GetComponent<SlotHelper>().originalParent = null;
     }
 
-    //this is the code for when an object is dragged onto this one
+    //when an object is dragged onto this one
     public void OnDrop(PointerEventData eventData)
     {
         if (eventData.pointerDrag != null)
@@ -202,13 +181,17 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             GameObject swapCandidateA = eventData.pointerDrag.gameObject;
             GameObject swapCandidateB = transform.gameObject;
 
-            //we need to get each of the slots' storage UI parents as they have a ref to their home storage
-            StorageManager homeStorageA = FindParentWithTag(swapCandidateA, "StorageUI").GetComponent<StorageUI>().connectedStorage.GetComponent<StorageManager>();
-            StorageManager homeStorageB = FindParentWithTag(swapCandidateB, "StorageUI").GetComponent<StorageUI>().connectedStorage.GetComponent<StorageManager>();
+            //cache the storageUI's of each slot so Finds / GetComps are called as few times as possible
+            StorageUI storageUI_A = FindParentWithTag(swapCandidateA, "StorageUI").GetComponent<StorageUI>();
+            StorageUI storageUI_B = FindParentWithTag(swapCandidateB, "StorageUI").GetComponent<StorageUI>();
+
+            //we need to get each of the slots' storage managers
+            StorageManager homeStorageA = storageUI_A.connectedStorage.GetComponent<StorageManager>();
+            StorageManager homeStorageB = storageUI_B.connectedStorage.GetComponent<StorageManager>();
 
             //we then want to find the creatures associated with these slots via their positions in the slots array that contains them
-            int slotAPosInArray = System.Array.IndexOf(FindParentWithTag(swapCandidateA, "StorageUI").GetComponent<StorageUI>().slotsArray, swapCandidateA);
-            int slotBPosInArray = System.Array.IndexOf(FindParentWithTag(swapCandidateB, "StorageUI").GetComponent<StorageUI>().slotsArray, swapCandidateB);
+            int slotAPosInArray = System.Array.IndexOf(storageUI_A.slotsArray, swapCandidateA);
+            int slotBPosInArray = System.Array.IndexOf(storageUI_B.slotsArray, swapCandidateB);
 
             Creature creatureA = null;
             Creature creatureB = null;
@@ -229,6 +212,8 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
             //there is room for improvement here - swapping to null slots breaks, so maybe have an alternative signal for potential null entries?
             //also, re-enable the image component on the slot prefab if this works
+
+            //null swapping would allow the user to put creatures into an empty pen, for a start
         }
     }
 

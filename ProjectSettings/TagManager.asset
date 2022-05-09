@@ -7,7 +7,6 @@ TagManager:
   - StorageManager
   - ScrollRect
   - StorageUI
-  - HelperSlot
   layers:
   - Default
   - TransparentFX

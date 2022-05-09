@@ -23,7 +23,6 @@ public class StorageUI : MonoBehaviour
     public GameObject connectedStorage;
     public GameObject slotsPanel;
     public GameObject slotPrefab;
-    public GameObject tempSlotPrefab;
 
     private EventManager _eventManager;
 
@@ -55,10 +54,6 @@ public class StorageUI : MonoBehaviour
             createdSlot.transform.SetParent(slotsPanel.transform, false);
             slotsArray[i] = createdSlot;
         }
-
-        //create a temporary slot right at the end
-        var tempSlot = Instantiate(tempSlotPrefab);
-        tempSlot.transform.SetParent(slotsPanel.transform, false);
 
         _eventManager.OnRefreshRequested?.Invoke(this, EventArgs.Empty);
     }
