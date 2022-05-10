@@ -6,6 +6,7 @@ public class Creature
 {
     //a unique ID for each creature
     public int creatureID;
+    public bool isEmptyCreature;
 
     public string nickname;
     public float age;
@@ -28,6 +29,9 @@ public class Creature
     {
         //set the unique ID
         SetUID();
+
+        //false on all actual creatures
+        isEmptyCreature = false;
 
         //attributes
         nickname = _nickname;

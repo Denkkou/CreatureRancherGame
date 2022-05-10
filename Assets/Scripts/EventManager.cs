@@ -13,7 +13,6 @@ public class EventManager : MonoBehaviour
         public Creature creatureA;
         public Creature creatureB;
     }
-    
 
     private int _lastUsedUID = 0;
 

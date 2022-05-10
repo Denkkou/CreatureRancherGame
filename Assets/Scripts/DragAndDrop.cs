@@ -203,17 +203,15 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 creatureA = homeStorageA.creatureStorageArray[slotAPosInArray];
                 creatureB = homeStorageB.creatureStorageArray[slotBPosInArray];
 
-                //emit event containing the two creatures if all is well
-                _eventManager.OnSwapRequested?.Invoke(this, new EventManager.OnSwapRequestedEventArgs { creatureA = creatureA, creatureB = creatureB });
+                //if neither are null, use the generic swap event
+                if (creatureA != null && creatureB != null)
+                {
+                    //emit event containing the two creatures if all is well
+                    _eventManager.OnSwapRequested?.Invoke(this, new EventManager.OnSwapRequestedEventArgs { creatureA = creatureA, creatureB = creatureB });
+                }
             }
             else
                 Debug.Log("Swap aborted: Out of Bounds Error");
-
-
-            //there is room for improvement here - swapping to null slots breaks, so maybe have an alternative signal for potential null entries?
-            //also, re-enable the image component on the slot prefab if this works
-
-            //null swapping would allow the user to put creatures into an empty pen, for a start
         }
     }
 

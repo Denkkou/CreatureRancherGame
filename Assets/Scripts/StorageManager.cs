@@ -32,14 +32,23 @@ public abstract class StorageManager : MonoBehaviour
         //find the event manager on EventSystem
         _eventManager = GameObject.Find("EventSystem").GetComponent<EventManager>();
 
-        //subscribe to the swap event
+        //subscribe to the swap events
         _eventManager.OnSwapRequested += EventManager_OnSwapRequested;
 
         //null-initialise the storage array
         creatureStorageArray = new Creature[maxStorageCapacity];
 
+        //fill the array with empty creatures
         for (int i = 0; i < creatureStorageArray.Length; i++)
-            creatureStorageArray[i] = null;
+        {
+            Creature emptyCreature = new Creature();
+            emptyCreature.isEmptyCreature = true;
+            emptyCreature.type = CreatureType.EMPTY;
+            emptyCreature.size = CreatureSize.EMPTY;
+
+            creatureStorageArray[i] = emptyCreature;
+        }
+            
 
         //refresh any interfaces
         EmitRefreshRequest();
@@ -81,12 +90,9 @@ public abstract class StorageManager : MonoBehaviour
         EmitRefreshRequest();
     }
 
-    //receive the two creatures to be swapped
     private void EventManager_OnSwapRequested(object sender, EventManager.OnSwapRequestedEventArgs e)
     {
-        Debug.Log("Swapping Creature: " + e.creatureA.creatureID + " and Creature: " + e.creatureB.creatureID);
-
-        //what if the storage manager checks to see which ones are present in its own storage
+        //the storage manager checks to see which ones are present in its own storage
         //and if one is + one isn't, put the new one in the old one's place
         //if neither are, do nothing
         //if both are, swap positions
@@ -104,8 +110,7 @@ public abstract class StorageManager : MonoBehaviour
             {
                 isAPresent = true;
                 creatureAPos = i;
-            } 
-            else if (creatureStorageArray[i] == e.creatureB)
+            } else if (creatureStorageArray[i] == e.creatureB)
             {
                 isBPresent = true;
                 creatureBPos = i;
@@ -116,29 +121,27 @@ public abstract class StorageManager : MonoBehaviour
         if (isAPresent == false && isBPresent == false)
             return;
 
-        //if both are in storage, perform an ordinary swap
+        //if both are present in own storage
         if (isAPresent == true && isBPresent == true)
         {
-            Creature temp = creatureStorageArray[creatureAPos];
-            creatureStorageArray[creatureAPos] = creatureStorageArray[creatureBPos];
-            creatureStorageArray[creatureBPos] = temp;
+            creatureStorageArray[creatureAPos] = e.creatureB;
+            creatureStorageArray[creatureBPos] = e.creatureA;
         }
 
-        //if A is in storage, then B is incoming, and needs putting in A's place
+        //if A is but B is not
         else if (isAPresent == true && isBPresent == false)
         {
-            //check if valid here
-
             creatureStorageArray[creatureAPos] = e.creatureB;
         }
 
-        //if B is in storage, then A is incoming, and needs putting in B's place
-        else if (isBPresent == true && isAPresent == false)
+        //if A is not but B is
+        else if (isAPresent == false && isBPresent == true)
         {
-            //check if valid here
-
             creatureStorageArray[creatureBPos] = e.creatureA;
         }
+
+        Debug.Log("Swapped Creature: (" + e.creatureA.creatureID + ") " + e.creatureA.type 
+            + " and Creature: (" + e.creatureB.creatureID + ") " + e.creatureB.type);
 
         //state that a swap just occured for the late refresh
         swapOccuredOnPrevFrame = true;
@@ -162,12 +165,13 @@ public abstract class StorageManager : MonoBehaviour
         return true;
     }
 
+    //find the first empty creature in the array
     private int FindFirstEmptyIndex()
     {
         for (int i = 0; i < creatureStorageArray.Length; i++)
         {
-            //so long as one "null" exists, there's space
-            if (creatureStorageArray[i] == null)
+            //so long as one empty creature exists, there's space
+            if (creatureStorageArray[i].isEmptyCreature == true)
                 return i;
         }
 

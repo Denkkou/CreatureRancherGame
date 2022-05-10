@@ -77,7 +77,7 @@ public class StorageUI : MonoBehaviour
     private void EventManager_OnRefreshRequested(object sender, EventArgs e)
     {
         //refresh the UI here
-        Debug.Log("Refresh requested from " + sender);
+        //Debug.Log("Refresh requested from " + sender);
 
         for (int i = 0; i < slotsArray.Length; i++)
         {
