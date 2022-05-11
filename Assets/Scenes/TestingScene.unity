@@ -567,7 +567,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStorageCapacity: 6
-  unrestrictedStorage: 1
+  unrestrictedStorage: 0
   allowedSize: 0
   allowedType: 1
 --- !u!1 &963194225
@@ -1556,7 +1556,7 @@ MonoBehaviour:
   maxStorageCapacity: 50
   unrestrictedStorage: 1
   allowedSize: 3
-  allowedType: 1
+  allowedType: 0
 --- !u!114 &1611395458
 MonoBehaviour:
   m_ObjectHideFlags: 0

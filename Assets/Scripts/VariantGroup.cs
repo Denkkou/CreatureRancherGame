@@ -7,8 +7,7 @@ using UnityEngine;
 public enum CreatureType
 {
     Eepy,
-    UNDEFINED, //used as a flag for mixed storages
-    EMPTY //used only for empty creature objects
+    UNDEFINED //used as a flag for mixed storage
 }
 
 public enum CreatureSize
@@ -16,8 +15,7 @@ public enum CreatureSize
     Small,
     Medium,
     Large,
-    UNDEFINED,
-    EMPTY
+    UNDEFINED
 }
 
 [CreateAssetMenu(fileName = "NewVariantGroup", menuName = "Creatures/New Variant Group")]

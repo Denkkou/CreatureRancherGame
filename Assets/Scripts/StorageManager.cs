@@ -43,12 +43,12 @@ public abstract class StorageManager : MonoBehaviour
         {
             Creature emptyCreature = new Creature();
             emptyCreature.isEmptyCreature = true;
-            emptyCreature.type = CreatureType.EMPTY;
-            emptyCreature.size = CreatureSize.EMPTY;
 
             creatureStorageArray[i] = emptyCreature;
         }
-            
+
+        //set species filter to undefined
+        allowedType = CreatureType.UNDEFINED;
 
         //refresh any interfaces
         EmitRefreshRequest();
@@ -60,6 +60,7 @@ public abstract class StorageManager : MonoBehaviour
         if (swapOccuredOnPrevFrame)
         {
             EmitRefreshRequest();
+            UpdateAcceptedSpecies();
             swapOccuredOnPrevFrame = false;
         }
     }
@@ -157,11 +158,12 @@ public abstract class StorageManager : MonoBehaviour
     {
         for (int i = 0; i < creatureStorageArray.Length; i++)
         {
-            if (creatureStorageArray[i] != null)
-                return false;
+            //as soon as a non-empty creature is found, its not empty
+            if (creatureStorageArray[i].isEmptyCreature == false)
+                return false;                
         }
 
-        //if all are null, its empty
+        //otherwise, its empty
         return true;
     }
 
@@ -191,7 +193,8 @@ public abstract class StorageManager : MonoBehaviour
             //find the creature added and set the acceptedSpecies to match
             for (int i = 0; i < creatureStorageArray.Length; i++)
             {
-                if (creatureStorageArray[i] != null)
+                //find the creature and get its species (type)
+                if (creatureStorageArray[i].isEmptyCreature == false)
                 {
                     allowedType = creatureStorageArray[i].type;
                     break;

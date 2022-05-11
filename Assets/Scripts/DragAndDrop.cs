@@ -203,16 +203,40 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 creatureA = homeStorageA.creatureStorageArray[slotAPosInArray];
                 creatureB = homeStorageB.creatureStorageArray[slotBPosInArray];
 
-                //if neither are null, use the generic swap event
-                if (creatureA != null && creatureB != null)
+                //run the checks to ensure that the swap is valid
+                if (IsSwapValid(creatureA, homeStorageA, creatureB, homeStorageB) == true)
                 {
                     //emit event containing the two creatures if all is well
                     _eventManager.OnSwapRequested?.Invoke(this, new EventManager.OnSwapRequestedEventArgs { creatureA = creatureA, creatureB = creatureB });
-                }
+                } 
+                else
+                    Debug.Log("Swap was not valid");            
             }
             else
                 Debug.Log("Swap aborted: Out of Bounds Error");
         }
+    }
+
+    private bool IsSwapValid(Creature creatureA, StorageManager homeStorageA, Creature creatureB, StorageManager homeStorageB)
+    {
+        //check if A matches the criteria of homeStorageB (or is an empty)
+        if (creatureA.isEmptyCreature == true
+            || ((creatureA.type == homeStorageB.allowedType || homeStorageB.allowedType == CreatureType.UNDEFINED)
+            && (creatureA.size == homeStorageB.allowedSize || homeStorageB.allowedSize == CreatureSize.UNDEFINED)))
+        {
+            //then check if B matches the criteria of homeStorageA (or is also an empty)
+            if (creatureB.isEmptyCreature == true
+                || ((creatureB.type == homeStorageA.allowedType || homeStorageA.allowedType == CreatureType.UNDEFINED)
+                && (creatureB.size == homeStorageB.allowedSize || homeStorageA.allowedSize == CreatureSize.UNDEFINED)))
+            {
+                //passing all these checks means the swap is valid
+                return true;
+            } else
+                Debug.Log("Creature B is not allowed in Storage A");
+        } else
+            Debug.Log("CreatureA is not allowed in StorageB");
+
+        return false;
     }
 
     public static GameObject FindParentWithTag(GameObject childObject, string tag)
