@@ -34,6 +34,7 @@ public class StorageUI : MonoBehaviour
         //subscribe to the OnRefreshRequested event
         _eventManager = GameObject.Find("EventSystem").GetComponent<EventManager>();
         _eventManager.OnRefreshRequested += EventManager_OnRefreshRequested;
+        _eventManager.OnUIClosed += EventManager_OnUIClosed;
 
         //get the storage capacity from manager
         storageCapacity = connectedStorage.GetComponent<StorageManager>().maxStorageCapacity;
@@ -97,4 +98,13 @@ public class StorageUI : MonoBehaviour
         }
     }
 
+    private void EventManager_OnUIClosed(object sender, EventArgs e)
+    {
+        DisableUI();
+    }
+
+    private void DisableUI()
+    {
+        gameObject.SetActive(false);
+    }
 }

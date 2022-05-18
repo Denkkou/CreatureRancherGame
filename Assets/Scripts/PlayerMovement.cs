@@ -7,42 +7,59 @@ using UnityEngine.AI;
 public class PlayerMovement : MonoBehaviour
 {
     public GameObject destinationMarker;
+
+    private EventManager _eventManager;
+    private bool _uiIsOpen = false;
+
     NavMeshAgent agent;
     
     void Start()
     {
+        _eventManager = GameObject.Find("EventSystem").GetComponent<EventManager>();
+
+        //subscribe to UI open and close events
+        _eventManager.OnUIClosed += EventManager_OnUIClosed;
+        _eventManager.OnUIOpened += EventManager_OnUIOpened;
+
         agent = GetComponent<NavMeshAgent>();
     }
 
     void Update()
-    {
-        //this should be updated when interfaces are added
-        //we want to only allow movement clicks when we are not in an UI
-        //eg, if (input.mouse(0) && inInterface == false)
-
-        //also worth noting that when time comes to interact with an object in the world
-        //we shouldn't necessarily be navigating into it (unless this produces the same effect
-        //as runescape? then we keep it)
-
-        if (Input.GetMouseButtonDown(0))
+    {   
+        //only allow movement and world interaction when not in UI
+        if (_uiIsOpen == false)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            //when clicked, cast a ray out from the screen
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            if (Input.GetMouseButtonDown(0))
             {
-                if (hit.transform.tag == "Ground")
-                {
-                    //set destination for the agent
-                    agent.SetDestination(hit.point);
 
-                    //move marker & unhide
-                    destinationMarker.transform.position = hit.point;
-                    destinationMarker.SetActive(true);
-                } else
-                    Debug.Log("Player clicked invalid destination");
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                //when clicked, cast a ray out from the screen
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+                {
+                    if (hit.transform.tag == "Walkable")
+                    {
+                        //set destination for the agent
+                        agent.SetDestination(hit.point);
+
+                        //move marker & unhide
+                        destinationMarker.transform.position = hit.point;
+                        destinationMarker.SetActive(true);
+                    } else
+                        Debug.Log("Player clicked invalid destination");
+                }
             }
         }
+    }
+
+    private void EventManager_OnUIClosed(object sender, EventArgs e)
+    {
+        _uiIsOpen = false;
+    }
+
+    private void EventManager_OnUIOpened(object sender, EventArgs e)
+    {
+        _uiIsOpen = true;
     }
 }

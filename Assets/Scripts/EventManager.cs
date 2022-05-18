@@ -6,6 +6,8 @@ using UnityEngine;
 public class EventManager : MonoBehaviour
 {
     public EventHandler OnRefreshRequested;
+    public EventHandler OnUIOpened;
+    public EventHandler OnUIClosed;
 
     public EventHandler<OnSwapRequestedEventArgs> OnSwapRequested;
     public class OnSwapRequestedEventArgs : EventArgs
@@ -20,5 +22,10 @@ public class EventManager : MonoBehaviour
     {
         get => _lastUsedUID;
         set => _lastUsedUID = value;
+    }
+
+    public void UIClosed()
+    {
+        OnUIClosed?.Invoke(this, EventArgs.Empty);
     }
 }
