@@ -43,6 +43,8 @@ public abstract class StorageManager : MonoBehaviour
         {
             Creature emptyCreature = new Creature();
             emptyCreature.isEmptyCreature = true;
+            emptyCreature.type = CreatureType.UNDEFINED;
+            emptyCreature.size = CreatureSize.UNDEFINED;
 
             creatureStorageArray[i] = emptyCreature;
         }

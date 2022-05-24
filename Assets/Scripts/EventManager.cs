@@ -9,6 +9,14 @@ public class EventManager : MonoBehaviour
     public EventHandler OnUIOpened;
     public EventHandler OnUIClosed;
 
+    public EventHandler<OnCreatureHoveredEventArgs> OnCreatureHovered;
+    public class OnCreatureHoveredEventArgs : EventArgs
+    {
+        public Creature creature;
+    }
+
+    public EventHandler OnCreatureHoverExited;
+
     public EventHandler<OnSwapRequestedEventArgs> OnSwapRequested;
     public class OnSwapRequestedEventArgs : EventArgs
     {

@@ -12,7 +12,7 @@ using UnityEngine.EventSystems;
  * (might be an issue with MouseHover.cs?)
  */
 
-public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler
+public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler
 {
     private Canvas _canvas;
     private CanvasGroup _canvasGroup;
@@ -57,6 +57,21 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         scrollRect = GameObject.Find("Scroll").GetComponent<ScrollRect>();
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        StorageUI storageUI = FindParentWithTag(transform.gameObject, "StorageUI").GetComponent<StorageUI>();
+        StorageManager homeStorage = storageUI.connectedStorage.GetComponent<StorageManager>();
+        int slotPosInArray = System.Array.IndexOf(storageUI.slotsArray, transform.gameObject);
+
+        Creature creature = homeStorage.creatureStorageArray[slotPosInArray];
+
+        //emit the signal containing the creature for infoboxes
+        if (creature.isEmptyCreature == false)
+        {
+            _eventManager.OnCreatureHovered?.Invoke(this, new EventManager.OnCreatureHoveredEventArgs { creature = creature });
+        }
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         //set the original position of the icon when clicked
@@ -67,6 +82,8 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        //emit signal to inform infoboxes that pointer has exited
+        _eventManager.OnCreatureHoverExited?.Invoke(this, EventArgs.Empty);
 
         StopAllCoroutines();
     }
