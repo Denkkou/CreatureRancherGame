@@ -318,6 +318,8 @@ MonoBehaviour:
   slotsPanel: {fileID: 1040395527}
   slotPrefab: {fileID: 7614686363470000530, guid: b9e213aa37f087144884030fbcbddfe7, type: 3}
   slotsArray: []
+  maleIcon: {fileID: 2800000, guid: 70f942ba418594b478506e85136fe79a, type: 3}
+  femaleIcon: {fileID: 2800000, guid: 11447d246d7ffe34ba787c1dce4744a2, type: 3}
 --- !u!114 &128184617
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2016,6 +2018,8 @@ MonoBehaviour:
   slotsPanel: {fileID: 2053105489}
   slotPrefab: {fileID: 7614686363470000530, guid: b9e213aa37f087144884030fbcbddfe7, type: 3}
   slotsArray: []
+  maleIcon: {fileID: 2800000, guid: 70f942ba418594b478506e85136fe79a, type: 3}
+  femaleIcon: {fileID: 2800000, guid: 11447d246d7ffe34ba787c1dce4744a2, type: 3}
 --- !u!114 &1221817771
 MonoBehaviour:
   m_ObjectHideFlags: 0

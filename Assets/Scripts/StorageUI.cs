@@ -29,6 +29,9 @@ public class StorageUI : MonoBehaviour
     public GameObject[] slotsArray;
     private int storageCapacity;
 
+    public Texture2D maleIcon;
+    public Texture2D femaleIcon;
+
     private void Start()
     {
         //subscribe to the OnRefreshRequested event
@@ -80,18 +83,36 @@ public class StorageUI : MonoBehaviour
         //refresh the UI here
         //Debug.Log("Refresh requested from " + sender);
 
+        Creature[] creatures = connectedStorage.GetComponent<StorageManager>().creatureStorageArray;
+
         for (int i = 0; i < slotsArray.Length; i++)
         {
             try
             {
                 //set the icon
                 slotsArray[i].transform.GetChild(0).GetComponent<RawImage>().enabled = true;
-                slotsArray[i].transform.GetChild(0).GetComponent<RawImage>().texture = connectedStorage.GetComponent<StorageManager>().creatureStorageArray[i].variant.variantIcon;
+                slotsArray[i].transform.GetChild(0).GetComponent<RawImage>().texture = creatures[i].variant.variantIcon;
+
+                //set gender icon
+                slotsArray[i].transform.GetChild(1).GetComponent<RawImage>().enabled = true;
+
+                if (creatures[i].gender == 0)
+                    slotsArray[i].transform.GetChild(1).GetComponent<RawImage>().texture = femaleIcon;
+                else
+                    slotsArray[i].transform.GetChild(1).GetComponent<RawImage>().texture = maleIcon;
+
+                //set favourite icon
+                //slotsArray[i].transform.GetChild(2).GetComponent<RawImage>().enabled = true;
+                //slotsArray[i].transform.GetChild(2).GetComponent<RawImage>().texture = creatures[i].variant.variantIcon;
             }
             catch
             {
                 slotsArray[i].transform.GetChild(0).GetComponent<RawImage>().enabled = false;
                 slotsArray[i].transform.GetChild(0).GetComponent<RawImage>().texture = null;
+                slotsArray[i].transform.GetChild(1).GetComponent<RawImage>().enabled = false;
+                slotsArray[i].transform.GetChild(1).GetComponent<RawImage>().texture = null;
+                slotsArray[i].transform.GetChild(2).GetComponent<RawImage>().enabled = false;
+                slotsArray[i].transform.GetChild(2).GetComponent<RawImage>().texture = null;
             }
 
 

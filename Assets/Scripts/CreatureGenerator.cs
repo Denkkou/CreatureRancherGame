@@ -23,7 +23,8 @@ public class CreatureGenerator : MonoBehaviour
 
         string[] tempTraits = { "Sleepy", null, null };
         int randIndex = Random.Range(0, EepyVariantGroup.variants.Length);
-        creature = CreatureFromParams("Andra", 0f, 0, EepyVariantGroup.type, EepyVariantGroup.size, EepyVariantGroup.variants[randIndex], tempTraits);
+        int randGender = Random.Range(0, 2);
+        creature = CreatureFromParams("Andra", 0f, randGender, EepyVariantGroup.type, EepyVariantGroup.size, EepyVariantGroup.variants[randIndex], tempTraits);
 
         return creature;
     }
